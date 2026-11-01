@@ -175,7 +175,7 @@ body.is-match-view .topbar{margin:0 0 2px}
 <div class="panel" style="padding:8px 11px;font-size:12px" aria-label="試遊用敵AI設定">
   <b>試遊用・敵AI：</b><span id="enemyAiLabel"></span>
   <span style="display:inline-block;margin-left:8px"><a href="?enemyAI=current">現行AI</a> ／ <a href="?enemyAI=mixed30">混合AI（30%現行／70%改善）</a></span>
-  <div class="sub">切り替えるとページが再読み込みされ、プレイは最初からになります。本番版には反映されません。</div>
+  <div class="sub">切り替えるとページが再読み込みされ、プレイは最初からになります。この試遊ページは混合AIが初期設定です。本番のゲーム画面には反映されません。</div>
 </div>
 
 <nav id="viewNav" class="view-nav" aria-label="画面切り替え"><button type="button" class="btn" data-view="start" onclick="setView('start')">スタート</button><button type="button" class="btn" data-view="match" onclick="setView('match')">試合</button><button type="button" class="btn" data-view="progress" onclick="setView('progress')">イベント・成長</button><button type="button" class="btn" data-view="history" onclick="setView('history')">ラリー履歴</button><button type="button" class="btn" data-view="log" onclick="setView('log')">ログ</button><button type="button" class="btn" data-view="result" onclick="setView('result')">最終結果</button></nav>
@@ -426,7 +426,7 @@ function pointReset(){
   }
 }
 
-const ENEMY_AI_MODE=new URLSearchParams(location.search).get("enemyAI")==="mixed30"?"mixed30":"current";
+const ENEMY_AI_MODE=new URLSearchParams(location.search).get("enemyAI")==="current"?"current":"mixed30";
 const DEV_MODE=new URLSearchParams(location.search).get("dev")==="1";
 
 function cloneGameData(value){return JSON.parse(JSON.stringify(value))}
