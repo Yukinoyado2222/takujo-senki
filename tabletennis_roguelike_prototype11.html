@@ -202,7 +202,7 @@ body.is-match-view .topbar{margin:0 0 2px}
 <div class="grid" style="margin-top:8px">
   <label class="btn"><b>プレイヤー強化</b><select id="devBuild" style="width:100%;margin-top:6px;padding:8px">
     <option value="base">初期状態</option>
-    <option value="five">初期5種＋</option>
+    <option value="five">初期4種＋</option>
     <option value="eight">スキルカード8種＋</option>
     <option value="all">全スキルカード＋</option>
   </select></label>
@@ -249,8 +249,7 @@ const TECHS={
  stop:{name:"ストップ",side:"both",base:86,power:-1,idealSpins:["下1","無"],idealPower:1,idealLength:"ショート",outputLength:"ショート",desc:"ネット際へ短く落とす下回転の返球。"},
  foreDrive:{name:"フォアドライブ",side:"F",base:74,power:1,idealSpins:["下1","無","上1"],idealPower:1,idealLength:"ロング",desc:"基本的な攻撃技。"},
  backBlock:{name:"バックブロック",side:"B",base:84,power:0,idealSpin:"上1",idealPowers:[2,3],idealLength:"ロング",desc:"バック面で安定して受ける。"},
- foreSmash:{name:"スマッシュ",side:"F",base:90,power:3,idealSpin:"無",idealPower:1,idealLength:"ロング",chanceOnly:true,desc:"チャンスボール専用。"},
- justReturn:{name:"とにかく返す",side:"both",base:90,power:-1,guaranteedChance:true,desc:"基本成功率90%。成功すると必ず相手のチャンスボールになる。"},
+ foreSmash:{name:"スマッシュ",side:"F",base:90,power:3,idealSpin:"無",idealPower:1,idealLength:"ロング",desc:"高速だが不適正球では成功率が低下する決定打。"},
  backDrive:{name:"バックドライブ",side:"B",base:74,power:1,idealSpins:["下1","無","上1"],idealPower:1,idealLength:"ロング",idealLengthPlus:["ショート","ロング"],desc:"バック面の攻撃技。＋強化で適正長さにショートを追加。"},
  foreBlock:{name:"フォアブロック",side:"F",base:84,power:0,idealSpin:"上1",idealPowers:[2,3],idealLength:"ロング",desc:"フォア面で安定して受ける。"},
  foreFlick:{name:"フォアフリック",side:"F",base:72,power:0,idealSpins:["上1","無","下1"],idealPower:1,idealLength:"ショート",desc:"ショートボールへの攻撃。"},
@@ -260,8 +259,8 @@ const TECHS={
 };
 const COST={stop:3,backDrive:3,foreBlock:3,foreFlick:4,backFlick:4,foreCut:4,backCut:4};
 const EVENT_NAMES={coach:"コーチ",practice:"練習",training:"特訓",equipment:"用具の購入",confidence:"心ここにあらず",overwork:"オーバーワーク",powerCleanse:"強打×3削除"};
-const SPECIAL_CARDS=["third","desperation","counter","finisher","feint"];const INITIAL_TECHNIQUES=["push","foreDrive","backBlock","foreSmash","justReturn"];const isNewTechnique=id=>!INITIAL_TECHNIQUES.includes(id);
-const UPGRADE_EFFECTS={stop:"基本成功率+10ポイント",push:"適正回転に下回転★2を追加",foreDrive:"返球回転段階+1（上限★2）",backDrive:"適正長さにショートを追加",foreBlock:"返球速度を入力速度−1（最低★1）に変更",backBlock:"返球速度を入力速度−1（最低★1）に変更",foreFlick:"返球速度+1",backFlick:"基本成功率+10ポイント",foreCut:"返球回転段階+1（上限★2）",backCut:"適正回転に上回転★2を追加",foreSmash:"返球速度+1",justReturn:"基本成功率90%→99%",underShort:"下回転量+1",knuckleLong:"速度+1"};
+const SPECIAL_CARDS=["third","desperation","counter","finisher","feint"];const INITIAL_TECHNIQUES=["push","foreDrive","backBlock","foreSmash"];const isNewTechnique=id=>!INITIAL_TECHNIQUES.includes(id);
+const UPGRADE_EFFECTS={stop:"基本成功率+10ポイント",push:"適正回転に下回転★2を追加",foreDrive:"返球回転段階+1（上限★2）",backDrive:"適正長さにショートを追加",foreBlock:"返球速度を入力速度−1（最低★1）に変更",backBlock:"返球速度を入力速度−1（最低★1）に変更",foreFlick:"返球速度+1",backFlick:"基本成功率+10ポイント",foreCut:"返球回転段階+1（上限★2）",backCut:"適正回転に上回転★2を追加",foreSmash:"返球速度+1",underShort:"下回転量+1",knuckleLong:"速度+1"};
 
 const SERVES={
  underShort:{name:"下回転サーブ",spin:"下",spinLevel:1,power:1,length:"ショート",desc:"下回転・★1・ショート"},
@@ -275,19 +274,19 @@ const CARDS={
  desperation:{name:"背水の陣",desc:"相手にリードされていると成功率+15%。"},
  whiff:{name:"空振り",desc:"効果なし。"},
  counter:{name:"カウンター",desc:"選択技術の適正速度+2。実際の返球速度は変化しない。"},
- finisher:{name:"とどめの一球",desc:"ラリー6球目以降、対象技術の返球速度+2。相手が返球に成功すると次の自分の技術は「とにかく返す」のみ。"},
+ finisher:{name:"とどめの一球",desc:"ラリー6球目以降、対象技術の返球速度+2。相手が返球に成功すると次の自分の返球成功率−30ポイント（1打のみ）。"},
  feint:{name:"フェイント",desc:"相手の次の返球成功率を10ポイント低下させる。返球判定1回で消費。"}
 };
 
 const state={
  phase:"serve",view:"match",my:0,enemy:0,gp:0,matchTarget:3,matchNumber:1,bossTest:false,runFinished:false,
- learned:["push","foreDrive","backBlock","foreSmash","justReturn"],
+ learned:["push","foreDrive","backBlock","foreSmash"],
  serves:["underShort","knuckleLong"],
  deck:["focus","focus","focus","power","power","power"],hand:[],
  card:null,
- ball:{spin:"下",spinLevel:1,power:1,course:"B",length:"ショート",chance:false},
- pointBalls:0,playerLast:null,enemyLast:null,pendingHistory:null,rallyArrows:[],enemyReturnCount:0,enemyJustReturnUsed:false,
- finisherPending:false,finisherRestriction:false,feintPending:false,
+ ball:{spin:"下",spinLevel:1,power:1,course:"B",length:"ショート",},
+ pointBalls:0,playerLast:null,enemyLast:null,pendingHistory:null,rallyArrows:[],enemyReturnCount:0,
+ finisherPending:false,finisherRecoil:false,feintPending:false,
  aiError:null,aiRecoveryAttempts:0,aiResumeAtLimitUsed:false,enemyHitToken:0,
  selectedServe:null,selectedServeCourse:null,selectedShot:null,
  lastPointResult:null,overworkUpgrades:null,matchFinished:false,history:{},log:[],upgradedTechs:[],upgradedServes:[],equipment:{carbon:false,sticky:false,shoes:false},eventCandidates:[],eventOptions:[],eventMode:null,eventDone:false,eventRerolling:false,specialCardsGained:[]
@@ -295,7 +294,7 @@ const state={
 
 const enemy={
  name:"中学生",
- techs:["push","foreDrive","backBlock","foreSmash","justReturn"],
+ techs:["push","foreDrive","backBlock","foreSmash"],
  upgradedTechs:[],
  serves:["underShort","knuckleLong"],
  upgradedServes:[]
@@ -326,19 +325,18 @@ const sideName=s=>s==="F"?"フォア側":s==="B"?"バック側":"両面";
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
 function addLog(s){state.log.unshift(s);state.log=state.log.slice(0,70);renderLog()}
 function actualStrokeSide(technique,course){return technique.side==="both"?"both":technique.side}
-function justReturnBlocked(last){return !!last&&last.techId==="justReturn"}
-function resetEnemyReturnState(){state.enemyReturnCount=0;state.enemyJustReturnUsed=false}
+
+function resetEnemyReturnState(){state.enemyReturnCount=0;}
 function registerEnemyReturn(id){
   state.enemyReturnCount++;
-  if(id==="justReturn")state.enemyJustReturnUsed=true;
 }
-function enemyTechniqueIds(techIds,b,last,returnCount,justReturnUsed){
+function enemyTechniqueIds(techIds){
   if(!Array.isArray(techIds))return [];
   return techIds.filter(id=>{
     const t=TECHS[id];
     if(!t)return false;
-    if(!b.chance&&t.chanceOnly)return false;
-    if(id==="justReturn"&&justReturnBlocked(last))return false;
+
+
     return true;
   });
 }
@@ -372,7 +370,7 @@ function setupFinalBossOpponent(){
 }
 
 function setupMatchByNumber(){
-  const junior=["push","foreDrive","backBlock","foreSmash","justReturn"];
+  const junior=["push","foreDrive","backBlock","foreSmash"];
   const highAttack=[...junior,"backDrive","foreFlick","backFlick"];
   const highCut=[...junior,"foreBlock","foreCut","backCut","stop"];
   const all=[...Object.keys(TECHS)];
@@ -409,9 +407,9 @@ function serverIsPlayerNow(){
 
 function pointReset(){
   state.aiError=null;state.aiRecoveryAttempts=0;state.aiResumeAtLimitUsed=false;state.enemyHitToken++;
-  state.finisherPending=false;state.finisherRestriction=false;state.feintPending=false;
+  state.finisherPending=false;state.finisherRecoil=false;state.feintPending=false;
   drawHand(); state.pointBalls=0;state.playerLast=null;state.enemyLast=null;state.pendingHistory=null;state.rallyArrows=[];resetEnemyReturnState();
-  state.ball={spin:"下",spinLevel:1,power:1,course:"B",length:"ショート",chance:false};
+  state.ball={spin:"下",spinLevel:1,power:1,course:"B",length:"ショート",};
   state.phase="serve";state.selectedServe=null;state.selectedServeCourse=null;state.selectedShot=null;
   const serverIsPlayer=serverIsPlayerNow();
   if(!serverIsPlayer){
@@ -448,15 +446,15 @@ function resetForBossTest(build,gp){
   state.runFinished=false;state.matchFinished=false;state.matchTarget=11;state.bossTest=true;
   state.learned=[...Object.keys(TECHS)];state.serves=["underShort","knuckleLong"];
   state.deck=["focus","focus","focus","power","power","power"];state.hand=[];state.card=null;
-  state.ball={spin:"下",spinLevel:1,power:1,course:"B",length:"ショート",chance:false};
+  state.ball={spin:"下",spinLevel:1,power:1,course:"B",length:"ショート",};
   state.pointBalls=0;state.playerLast=null;state.enemyLast=null;state.pendingHistory=null;state.rallyArrows=[];
-  state.enemyReturnCount=0;state.enemyJustReturnUsed=false;state.aiError=null;state.aiRecoveryAttempts=0;state.aiResumeAtLimitUsed=false;state.enemyHitToken++;
+  state.enemyReturnCount=0;state.aiError=null;state.aiRecoveryAttempts=0;state.aiResumeAtLimitUsed=false;state.enemyHitToken++;
   state.selectedServe=null;state.selectedServeCourse=null;state.selectedShot=null;
   state.lastPointResult=null;state.overworkUpgrades=null;state.history={};state.log=[];
   state.upgradedTechs=[];state.upgradedServes=[];state.equipment={carbon:false,sticky:false,shoes:false};
   state.eventCandidates=[];state.eventOptions=[];state.eventMode=null;state.eventDone=true;state.eventRerolling=false;state.specialCardsGained=[];
-  if(build==="five")state.upgradedTechs=["push","foreDrive","backBlock","foreSmash","justReturn"];
-  if(build==="eight")state.upgradedTechs=["push","foreDrive","backBlock","foreSmash","justReturn","backDrive","foreBlock","foreFlick"];
+  if(build==="five")state.upgradedTechs=["push","foreDrive","backBlock","foreSmash"];
+  if(build==="eight")state.upgradedTechs=["push","foreDrive","backBlock","foreSmash","backDrive","foreBlock","foreFlick"];
   if(build==="all"){state.upgradedTechs=[...state.learned];state.upgradedServes=[...state.serves];state.equipment.carbon=true}
   setupFinalBossOpponent();
   activeCardCategory="serve";
@@ -514,16 +512,16 @@ function renderDevBoss(){
 function newRun(){
   state.view="match";state.matchNumber=1;state.matchTarget=3;state.bossTest=false;state.runFinished=false;state.matchFinished=false;
   state.gp=0;state.my=0;state.enemy=0;state.lastPointResult=null;state.overworkUpgrades=null;
-  state.learned=["push","foreDrive","backBlock","foreSmash","justReturn"];
+  state.learned=["push","foreDrive","backBlock","foreSmash"];
   state.serves=["underShort","knuckleLong"];
   state.deck=["focus","focus","focus","power","power","power"];
   state.history={};state.log=[];state.upgradedTechs=[];state.upgradedServes=[];state.equipment={carbon:false,sticky:false,shoes:false};state.eventCandidates=[];state.eventOptions=[];state.eventMode=null;state.eventDone=false;state.eventRerolling=false;state.specialCardsGained=[];
-  addLog("新しいラン。初期スキルカード5種、初期サーブカード2種。");
+  addLog("新しいラン。初期スキルカード4種、初期サーブカード2種。");
   pointReset();render();
 }
 function hasRunProgress(){
   const defaultDeck=["focus","focus","focus","power","power","power"];
-  const defaultLearned=["push","foreDrive","backBlock","foreSmash","justReturn"];
+  const defaultLearned=["push","foreDrive","backBlock","foreSmash"];
   const defaultServes=["underShort","knuckleLong"];
   return state.matchNumber>1||state.my!==0||state.enemy!==0||state.gp!==0||state.phase!=="serve"||
     !!state.eventMode||!!state.eventDone||Object.keys(state.history||{}).length>0||(state.log||[]).length>1||
@@ -687,7 +685,7 @@ function infoHTML(){
     "<div class=ball-summary-item><b>速度</b> "+"★".repeat(b.power)+"</div>"+
     "<div class=ball-summary-item><b>コース</b> 受け手の"+sideName(b.course)+"</div>"+
     "<div class=ball-summary-item><b>長さ</b> "+b.length+"</div>"+
-    "<div class=ball-summary-item><b>状態</b> "+(b.chance?"チャンスボール":"通常")+"</div>"+
+
     "<div class=ball-summary-item><b>ラリー</b> 次は"+(state.pointBalls+1)+"球目</div>"+
     "</div>";
 }
@@ -700,14 +698,12 @@ function renderPlayer(){
   const tbox=$("tech");tbox.innerHTML="";tbox.className="cards";
   state.learned.forEach(id=>{
     const t=TECHS[id],b=document.createElement("button");
-    const blockedJustReturn=id==="justReturn"&&justReturnBlocked(state.playerLast);
-    const blockedFinisher=state.finisherRestriction&&id!=="justReturn";
-    const blocked=blockedJustReturn||blockedFinisher;
+    const blocked=false;
     b.className="card text-card"+(shot&&shot.id===id?" selected":"");
     b.disabled=blocked;
     b.dataset.tech=id;
     b.setAttribute("aria-label",techName(id)+"を選択");
-    b.innerHTML="<span class=\"card-stamp\">"+(blocked?"使用不可":shot&&shot.id===id?"選択中":"選択")+"</span><span class=\"card-art\" aria-hidden=\"true\">"+(id==="justReturn"?"↔":id==="backDrive"||id==="foreDrive"?"↗":id==="foreBlock"||id==="backBlock"?"▤":id==="foreSmash"?"‼":id==="foreFlick"||id==="backFlick"?"↗":"↘")+"</span><span class=\"card-name\">"+techName(id)+"</span><span class=\"card-description\">"+(blockedJustReturn?"<span style=\"color:#d71920;font-weight:700\">前の自分の打球で使用したため、今回は使用不可。</span><br>":blockedFinisher?"<span style=\"color:#d71920;font-weight:700\">とどめの一球の効果中は「とにかく返す」のみ選択できます。</span><br>":"")+(t.side==="F"?"フォア面":t.side==="B"?"バック面":"両面")+" / 基本"+t.base+"%<br>"+t.desc+"</span>";
+    b.innerHTML="<span class=\"card-stamp\">"+(blocked?"使用不可":shot&&shot.id===id?"選択中":"選択")+"</span><span class=\"card-art\" aria-hidden=\"true\">"+(id==="backDrive"||id==="foreDrive"?"↗":id==="foreBlock"||id==="backBlock"?"▤":id==="foreSmash"?"‼":id==="foreFlick"||id==="backFlick"?"↗":"↘")+"</span><span class=\"card-name\">"+techName(id)+"</span><span class=\"card-description\">"+(t.side==="F"?"フォア面":t.side==="B"?"バック面":"両面")+" / 基本"+t.base+"%<br>"+t.desc+"</span>";
     b.onclick=()=>chooseTech(id);tbox.appendChild(b);
   });
   const cbox=$("cards");cbox.innerHTML="";
@@ -757,7 +753,7 @@ function renderBall(){
   if(state.phase==="serve"){
     const p=courtPoint("player","B","ロング");ball.style.left=p.x+"%";ball.style.top=p.y+"%";ball.className="ball";$("ballLabel").textContent="";renderRallyArrows();return;
   }
-  const receiver=state.phase==="player"?"player":"enemy",p=courtPoint(receiver,state.ball.course,state.ball.length);ball.style.left=p.x+"%";ball.style.top=p.y+"%";ball.className="ball";const lastEnemy=state.enemyLast&&(TECHS[state.enemyLast.techId]||SERVES[state.enemyLast.techId]);$("ballLabel").textContent=state.phase==="player"?(state.ball.chance?(lastEnemy?lastEnemy.name+"（チャンスボール！）":"チャンスボール！"):(lastEnemy?lastEnemy.name:"")):(state.phase==="serve"?"":"");renderRallyArrows();
+  const receiver=state.phase==="player"?"player":"enemy",p=courtPoint(receiver,state.ball.course,state.ball.length);ball.style.left=p.x+"%";ball.style.top=p.y+"%";ball.className="ball";const lastEnemy=state.enemyLast&&(TECHS[state.enemyLast.techId]||SERVES[state.enemyLast.techId]);$("ballLabel").textContent=state.phase==="player"?((lastEnemy?lastEnemy.name:"")):(state.phase==="serve"?"":"");renderRallyArrows();
 }
 function renderHistory(){
   const rows=Object.entries(state.history);
@@ -770,7 +766,7 @@ function servePower(id,upgraded){const s=SERVES[id];return s.power+(upgraded&&id
 function executeServe(){
   if(state.runFinished||!state.selectedServe||!state.selectedServeCourse)return;
   const s=SERVES[state.selectedServe];
-  state.ball={spin:s.spin,spinLevel:serveSpinLevel(state.selectedServe,techIsUpgraded(state.selectedServe)),power:servePower(state.selectedServe,techIsUpgraded(state.selectedServe)),course:state.selectedServeCourse,length:s.length,chance:false};
+  state.ball={spin:s.spin,spinLevel:serveSpinLevel(state.selectedServe,techIsUpgraded(state.selectedServe)),power:servePower(state.selectedServe,techIsUpgraded(state.selectedServe)),course:state.selectedServeCourse,length:s.length,};
   // The serve is the first hit. Course belongs to the enemy, who receives next.
   state.playerLast={course:"B",strokeSide:"F",techId:"serve"};state.pointBalls=1;addRallyArrow("player","player","B","ロング","enemy",state.selectedServeCourse,s.length);
   state.pendingHistory={actor:"player",name:s.name};
@@ -788,7 +784,7 @@ function enemyServe(){
   const spinLevel=serveSpinLevel(id,enemyServeIsUpgraded(id));
   const power=servePower(id,enemyServeIsUpgraded(id));
   const targetCourse=Math.random()<.5?"F":"B";
-  state.ball={spin:s.spin,spinLevel,power,course:targetCourse,length:s.length,chance:false};
+  state.ball={spin:s.spin,spinLevel,power,course:targetCourse,length:s.length,};
   // 相手のサーブは最初の1球。courseは次の受け手＝自分の側を示す。
   state.enemyLast={course:"B",strokeSide:"F",techId:id};
   addRallyArrow("enemy","enemy","B","ロング","player",targetCourse,s.length);
@@ -872,11 +868,11 @@ function enemyHit(token){
   if(token!==undefined&&token!==state.enemyHitToken)return;
   const b=state.ball;
   const enemyPosition=b.course;
-  // Smash is not merely discouraged: it is unavailable outside a chance ball.
+  // Smash is always selectable; candidate validity is based on learned technique IDs.
   const rawTechIds=Array.isArray(enemy.techs)?enemy.techs:[];
   const validTechIds=rawTechIds.filter(id=>Object.prototype.hasOwnProperty.call(TECHS,id));
   if(validTechIds.length!==rawTechIds.length)addLog("相手AIの不正な技IDを除外しました。");
-  const eligibleTechIds=enemyTechniqueIds(validTechIds,b,state.enemyLast,state.enemyReturnCount,state.enemyJustReturnUsed);
+  const eligibleTechIds=enemyTechniqueIds(validTechIds);
   let choices=eligibleTechIds.map(id=>{
     const t=TECHS[id];
     const strokeSide=actualStrokeSide(t,enemyPosition);
@@ -903,7 +899,7 @@ function enemyHit(token){
   if(state.feintPending)state.feintPending=false;
   if(!returned){state.aiError=null;state.aiRecoveryAttempts=0;state.aiResumeAtLimitUsed=false;addLog("相手のレシーブ失敗。自分の得点。");state.my++;returnPoint("win");return}
   state.aiError=null;state.aiRecoveryAttempts=0;state.aiResumeAtLimitUsed=false;
-  if(state.finisherPending){state.finisherPending=false;state.finisherRestriction=true;addLog("とどめの一球：次の自分の返球技術は「とにかく返す」のみ。");}
+  if(state.finisherPending){state.finisherPending=false;state.finisherRecoil=true;addLog("とどめの一球の反動：次の返球成功率−30ポイント。");}
   registerEnemyReturn(o.id);
   recordHistory(state.pendingHistory,{actor:"enemy",name:o.t.name});
   state.enemyLast={course:enemyPosition,strokeSide:actualStrokeSide(o.t,enemyPosition),techId:o.id};state.pointBalls++;
@@ -912,7 +908,7 @@ function enemyHit(token){
   addRallyArrow("enemy","enemy",enemyPosition,b.length,"player",targetCourse,outputLength);
   state.ball={
     spin:enemySpin(o.id,b),spinLevel:enemySpinLevel(o.id,b),power:enemyPower(o.id,b),
-    course:targetCourse,length:outputLength,chance:!!o.t.guaranteedChance
+    course:targetCourse,length:outputLength,
   };
   state.phase="player";state.card=null;render();
 }
@@ -926,8 +922,8 @@ function enemySpinLevel(id,b){
 }
 function applyEnemyFeint(success){return state.feintPending?clamp(success-10,1,99):success}
 function enemySuccess(t,b,foot,strokeSide,targetCourse){
-  if(t.chanceOnly&&!b.chance)return applyEnemyFeint(1);
-  if(t.guaranteedChance){const id=Object.keys(TECHS).find(k=>TECHS[k]===t);return applyEnemyFeint(enemyTechIsUpgraded(id)?99:90);}
+
+
   const id=Object.keys(TECHS).find(k=>TECHS[k]===t);
   const rotationPenalty=idealSpinDistance(t,spinKey(b),enemyTechIsUpgraded(id))*20;
   const speedPenalty=idealPowerDistance(t,b.power)*20;
@@ -939,7 +935,7 @@ function enemySuccess(t,b,foot,strokeSide,targetCourse){
   return applyEnemyFeint(clamp(t.base+learnedBonus+upgradeBonus-rotationPenalty-speedPenalty-idealLengthPenalty-lengthPenalty-(foot?15:0),1,99));
 }
 function enemySpin(id,b){
-  if(id==="justReturn"||id.includes("Flick"))return"無";
+  if(id.includes("Flick"))return"無";
   if(id.includes("Drive")||id.includes("Flick")||id==="foreBlock"||id==="backBlock")return"上";
   if(id==="push"||id==="foreCut"||id==="backCut"||id==="stop")return"下";
   if(id==="foreSmash")return"無";
@@ -982,11 +978,12 @@ function useCard(i){
 function chooseTech(id){
   if(state.runFinished||state.phase!=="player")return;
   const t=TECHS[id];
+  if(!t||!state.learned.includes(id)){addLog("未習得または存在しない技術は選択できません。");return}
   if(state.card&&!cardIsValidForTechnique(state.card,id)){addLog("このカードは選択中の技術には使用できません。");return}
   if(state.card==="counter"&&!cardAllowsTechnique("counter",id)){addLog("カウンターは適正速度が定義された技術にのみ使用できます。");return}
-  if(t.chanceOnly&&!state.ball.chance){addLog("スマッシュはチャンスボール専用。");return}
-  if(state.finisherRestriction&&id!=="justReturn"){addLog("とどめの一球の効果中は「とにかく返す」のみ選べます。");return}
-  if(id==="justReturn"&&justReturnBlocked(state.playerLast)){addLog("「とにかく返す」は2連続では使えません。");return}
+
+  
+
   state.selectedShot={id,step:"course"};
   render();
 }
@@ -1017,7 +1014,7 @@ function playerModifiers(t,b,foot,card,strokeSide,targetCourse){
   const modifiers=[];
   const id=Object.keys(TECHS).find(k=>TECHS[k]===t);
   const add=(label,value,detail="")=>{if(value)modifiers.push({label,value,detail})};
-  if(!t.guaranteedChance){
+  {
     const rotationSteps=idealSpinDistance(t,spinKey(b));
     const speedSteps=idealPowerDistance(t,b.power,card);
     const idealLengths=techIsUpgraded(id)&&t.idealLengthPlus?t.idealLengthPlus:[t.idealLength];
@@ -1037,14 +1034,13 @@ function playerModifiers(t,b,foot,card,strokeSide,targetCourse){
 }
 function playerSuccessBreakdown(t,b,foot,card,strokeSide,targetCourse){
   const id=Object.keys(TECHS).find(k=>TECHS[k]===t);
-  if(t.guaranteedChance){const rate=techIsUpgraded(id)?99:90;return {fixed:true,base:rate,modifiers:[],raw:rate,rate};
-  }
   const modifiers=[];
   const add=(label,value,detail="")=>{if(value)modifiers.push({label,value,detail});};
   add("追加習得技術",isNewTechnique(id)?5:0);
   add("カーボンラケット",state.equipment.carbon?-10:0);
   add("技術強化",techIsUpgraded(id)&&["backFlick","stop"].includes(id)?10:0);
   modifiers.push(...playerModifiers(t,b,foot,card,strokeSide,targetCourse));
+  if(state.finisherRecoil)add("とどめの一球の反動",-30);
   const raw=t.base+modifiers.reduce((sum,item)=>sum+item.value,0);
   return {fixed:false,base:t.base,modifiers,raw,rate:clamp(raw,1,99)};
 }
@@ -1056,7 +1052,7 @@ function calculationHTML(shot){
   const breakdown=playerSuccessBreakdown(t,b,shot.footwork,state.card,shot.strokeSide,shot.course);
   const signed=value=>(value>0?"+":"")+value+"ポイント";
   if(breakdown.fixed){
-    return "<div class=calculation><b>成功率（判定前）</b><br>選択スキルカード："+t.name+(techIsUpgraded(shot.id)?"＋":"")+"<br><br>基本成功率："+breakdown.rate+"%固定。回転・速度・長さ・フットワーク・カード補正は適用しません。<div class=final>＝ 最終成功率 "+breakdown.rate+"%</div></div>";
+    return "<div class=calculation><b>成功率（判定前）</b><br>選択スキルカード："+t.name+(techIsUpgraded(shot.id)?"＋":"")+"<br><br>基本成功率："+breakdown.base+"%固定。回転・速度・長さ・フットワーク・カード補正は適用しません。"+(state.finisherRecoil?"<br>とどめの一球の反動：−30ポイント":"")+"<div class=final>＝ 最終成功率 "+breakdown.rate+"%</div></div>";
   }
   const idealLengths=techIsUpgraded(shot.id)&&t.idealLengthPlus?t.idealLengthPlus:[t.idealLength];
   const modifiers=breakdown.modifiers.map(item=>"<br>"+item.label+"："+signed(item.value)+(item.detail?"（"+item.detail+"）":"")).join("");
@@ -1070,17 +1066,19 @@ function resolvePlayerShot(){
   const shot=state.selectedShot;
   if(state.phase!=="player"||!shot||shot.step!=="preview")return;
   const t=TECHS[shot.id],card=state.card;
-  if(!hit(shot.success)){addLog("自分："+t.name+"失敗（"+Math.round(shot.success)+"%）。相手の得点。");state.selectedShot=null;state.enemy++;returnPoint("lose");return}
+  const shotReturned=hit(shot.success);
+  if(state.finisherRecoil)state.finisherRecoil=false;
+  if(!shotReturned){addLog("自分："+t.name+"失敗（"+Math.round(shot.success)+"%）。相手の得点。");state.selectedShot=null;state.enemy++;returnPoint("lose");return}
   addLog("自分："+t.name+"成功（"+Math.round(shot.success)+"%）。");
   state.finisherPending=card==="finisher";
   state.feintPending=card==="feint";
   state.playerLast={course:shot.ball.course,strokeSide:shot.strokeSide,techId:shot.id};state.pointBalls++;
   const power=playerPower(shot.id,shot.ball,card);
-  if(state.finisherRestriction)state.finisherRestriction=false;
-  const chance=!!t.guaranteedChance;
+  
+  
   const outputLength=t.outputLength||"ロング";
   addRallyArrow("player","player",shot.ball.course,shot.ball.length,"enemy",shot.course,outputLength);
-  state.ball={spin:playerSpin(shot.id),spinLevel:clamp(shot.ball.spinLevel+((techIsUpgraded(shot.id)&&["foreDrive","foreCut"].includes(shot.id))?1:0),1,SPIN_LEVEL_LIMIT),power,length:outputLength,course:shot.course,chance};
+  state.ball={spin:playerSpin(shot.id),spinLevel:clamp(shot.ball.spinLevel+((techIsUpgraded(shot.id)&&["foreDrive","foreCut"].includes(shot.id))?1:0),1,SPIN_LEVEL_LIMIT),power,length:outputLength,course:shot.course,};
   if(shot.id==="stop")state.ball.spinLevel=1;
   state.pendingHistory={actor:"player",name:t.name};
   addLog(t.name+"で相手の"+sideName(shot.course)+"へ返球（"+state.pointBalls+"球目）。");
@@ -1097,7 +1095,7 @@ function baseSkillPower(id,b,upgraded){
   else if(id==="foreBlock"||id==="backBlock")power=upgraded?Math.max(1,b.power-1):1;
   else if(id==="foreCut"||id==="backCut")power=1;
   else if(id==="foreSmash")power=4;
-  else if(id==="justReturn")power=1;
+
   else power=Math.max(1,b.power+TECHS[id].power);
   if(upgraded&&["foreFlick","foreSmash"].includes(id))power+=1;
   return power;
@@ -1119,7 +1117,7 @@ function playerSpin(id){
   if(id==="foreBlock"||id==="backBlock")return"上";
   if(id==="foreCut"||id==="backCut")return"下";
   if(id==="foreSmash")return"無";
-  if(id==="justReturn")return"無";
+
   return state.ball.spin;
 }
 
