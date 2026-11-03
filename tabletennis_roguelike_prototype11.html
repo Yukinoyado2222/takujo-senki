@@ -370,7 +370,7 @@ function setupFinalBossOpponent(){
 }
 
 function setupMatchByNumber(){
-  const junior=["push","foreDrive","backBlock","foreSmash"];
+  const junior=["push","foreDrive","backBlock"];
   const highAttack=[...junior,"backDrive","foreFlick","backFlick"];
   const highCut=[...junior,"foreBlock","foreCut","backCut","stop"];
   const all=[...Object.keys(TECHS)];
@@ -915,10 +915,8 @@ function enemyHit(token){
 function enemyTechIsUpgraded(id){return !!id&&enemy.upgradedTechs.includes(id)}
 function enemyServeIsUpgraded(id){return !!id&&enemy.upgradedServes.includes(id)}
 function enemySpinLevel(id,b){
-  if(id==="stop")return 1;
-  let level=Math.min(b.spinLevel,SPIN_LEVEL_LIMIT);
-  if(enemyTechIsUpgraded(id)&&["foreDrive","foreCut"].includes(id))level=Math.min(level+1,SPIN_LEVEL_LIMIT);
-  return level;
+  // 返球回転量は入力球に依存しない。強化ドライブ／カットのみ★2。
+  return enemyTechIsUpgraded(id)&&["foreDrive","foreCut"].includes(id)?2:1;
 }
 function applyEnemyFeint(success){return state.feintPending?clamp(success-10,1,99):success}
 function enemySuccess(t,b,foot,strokeSide,targetCourse){
@@ -1078,7 +1076,7 @@ function resolvePlayerShot(){
   
   const outputLength=t.outputLength||"ロング";
   addRallyArrow("player","player",shot.ball.course,shot.ball.length,"enemy",shot.course,outputLength);
-  state.ball={spin:playerSpin(shot.id),spinLevel:clamp(shot.ball.spinLevel+((techIsUpgraded(shot.id)&&["foreDrive","foreCut"].includes(shot.id))?1:0),1,SPIN_LEVEL_LIMIT),power,length:outputLength,course:shot.course,};
+  state.ball={spin:playerSpin(shot.id),spinLevel:techIsUpgraded(shot.id)&&["foreDrive","foreCut"].includes(shot.id)?2:1,power,length:outputLength,course:shot.course,};
   if(shot.id==="stop")state.ball.spinLevel=1;
   state.pendingHistory={actor:"player",name:t.name};
   addLog(t.name+"で相手の"+sideName(shot.course)+"へ返球（"+state.pointBalls+"球目）。");
