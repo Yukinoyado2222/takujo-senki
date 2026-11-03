@@ -249,7 +249,7 @@ const TECHS={
  stop:{name:"ストップ",side:"both",base:86,power:-1,idealSpins:["下1","無"],idealPower:1,idealLength:"ショート",outputLength:"ショート",desc:"ネット際へ短く落とす下回転の返球。"},
  foreDrive:{name:"フォアドライブ",side:"F",base:74,power:1,idealSpins:["下1","無","上1"],idealPower:1,idealLength:"ロング",desc:"基本的な攻撃技。"},
  backBlock:{name:"バックブロック",side:"B",base:84,power:0,idealSpin:"上1",idealPowers:[2,3],idealLength:"ロング",desc:"バック面で安定して受ける。"},
- foreSmash:{name:"スマッシュ",side:"F",base:90,power:3,idealSpin:"無",idealPower:1,idealLength:"ロング",desc:"高速だが不適正球では成功率が低下する決定打。"},
+ foreSmash:{name:"スマッシュ",side:"F",base:75,power:3,idealSpin:"無",idealPower:1,idealLength:"ロング",desc:"高速だが不適正球では成功率が低下する決定打。"},
  backDrive:{name:"バックドライブ",side:"B",base:74,power:1,idealSpins:["下1","無","上1"],idealPower:1,idealLength:"ロング",idealLengthPlus:["ショート","ロング"],desc:"バック面の攻撃技。＋強化で適正長さにショートを追加。"},
  foreBlock:{name:"フォアブロック",side:"F",base:84,power:0,idealSpin:"上1",idealPowers:[2,3],idealLength:"ロング",desc:"フォア面で安定して受ける。"},
  foreFlick:{name:"フォアフリック",side:"F",base:72,power:0,idealSpins:["上1","無","下1"],idealPower:1,idealLength:"ショート",desc:"ショートボールへの攻撃。"},
@@ -259,7 +259,7 @@ const TECHS={
 };
 const COST={stop:3,backDrive:3,foreBlock:3,foreFlick:4,backFlick:4,foreCut:4,backCut:4};
 const EVENT_NAMES={coach:"コーチ",practice:"練習",training:"特訓",equipment:"用具の購入",confidence:"心ここにあらず",overwork:"オーバーワーク",powerCleanse:"強打×3削除"};
-const SPECIAL_CARDS=["third","desperation","counter","finisher","feint"];const INITIAL_TECHNIQUES=["push","foreDrive","backBlock","foreSmash"];const isNewTechnique=id=>!INITIAL_TECHNIQUES.includes(id);
+const SPECIAL_CARDS=["third","desperation","counter","finisher","feint"];const INITIAL_TECHNIQUES=["push","foreDrive","backBlock"];const isNewTechnique=id=>!INITIAL_TECHNIQUES.includes(id);
 const UPGRADE_EFFECTS={stop:"基本成功率+10ポイント",push:"適正回転に下回転★2を追加",foreDrive:"返球回転段階+1（上限★2）",backDrive:"適正長さにショートを追加",foreBlock:"返球速度を入力速度−1（最低★1）に変更",backBlock:"返球速度を入力速度−1（最低★1）に変更",foreFlick:"返球速度+1",backFlick:"基本成功率+10ポイント",foreCut:"返球回転段階+1（上限★2）",backCut:"適正回転に上回転★2を追加",foreSmash:"返球速度+1",underShort:"下回転量+1",knuckleLong:"速度+1"};
 
 const SERVES={
@@ -280,7 +280,7 @@ const CARDS={
 
 const state={
  phase:"serve",view:"match",my:0,enemy:0,gp:0,matchTarget:3,matchNumber:1,bossTest:false,runFinished:false,
- learned:["push","foreDrive","backBlock","foreSmash"],
+ learned:["push","foreDrive","backBlock"],
  serves:["underShort","knuckleLong"],
  deck:["focus","focus","focus","power","power","power"],hand:[],
  card:null,
@@ -512,16 +512,16 @@ function renderDevBoss(){
 function newRun(){
   state.view="match";state.matchNumber=1;state.matchTarget=3;state.bossTest=false;state.runFinished=false;state.matchFinished=false;
   state.gp=0;state.my=0;state.enemy=0;state.lastPointResult=null;state.overworkUpgrades=null;
-  state.learned=["push","foreDrive","backBlock","foreSmash"];
+  state.learned=["push","foreDrive","backBlock"];
   state.serves=["underShort","knuckleLong"];
   state.deck=["focus","focus","focus","power","power","power"];
   state.history={};state.log=[];state.upgradedTechs=[];state.upgradedServes=[];state.equipment={carbon:false,sticky:false,shoes:false};state.eventCandidates=[];state.eventOptions=[];state.eventMode=null;state.eventDone=false;state.eventRerolling=false;state.specialCardsGained=[];
-  addLog("新しいラン。初期スキルカード4種、初期サーブカード2種。");
+  addLog("新しいラン。初期スキルカード3種、初期サーブカード2種。");
   pointReset();render();
 }
 function hasRunProgress(){
   const defaultDeck=["focus","focus","focus","power","power","power"];
-  const defaultLearned=["push","foreDrive","backBlock","foreSmash"];
+  const defaultLearned=["push","foreDrive","backBlock"];
   const defaultServes=["underShort","knuckleLong"];
   return state.matchNumber>1||state.my!==0||state.enemy!==0||state.gp!==0||state.phase!=="serve"||
     !!state.eventMode||!!state.eventDone||Object.keys(state.history||{}).length>0||(state.log||[]).length>1||
